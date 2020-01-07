@@ -16,10 +16,9 @@
 		</el-header>
 		<el-container>
 			<el-aside :width="OnOffWidth+'px'">
-				<!-- el-icon-d-arrow-right -->
 				<div class="OnOff" @click="isCollapseFun"><span :class="isCollapse?'el-icon-d-arrow-right':'el-icon-d-arrow-left'"></span></div>
 				<el-menu :collapse-transition="false" :collapse="isCollapse" background-color="#545c64" text-color="#fff"
-				 active-text-color="#409EFF" :default-active="this.$route.fullPath"	router>
+				 active-text-color="#409EFF" :default-active="this.$route.fullPath" router>
 					<el-submenu :index="item.id+''" v-for="item in list" :key="item.id">
 						<template slot="title">
 							<i :class="listIcon[item.id]"></i>
@@ -34,14 +33,10 @@
 			<el-container>
 				<el-main>
 					<el-breadcrumb separator-class="el-icon-arrow-right">
-					  <el-breadcrumb-item :to="{ path: '/mian' }">首页</el-breadcrumb-item>
-					  <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-					  <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-					  <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+						<el-breadcrumb-item v-for="item in levelList" :key="item.path" :to="item.path">{{item.meta.title}}</el-breadcrumb-item>
 					</el-breadcrumb>
 					<router-view></router-view>
 				</el-main>
-				<el-footer>Footer</el-footer>
 			</el-container>
 		</el-container>
 	</el-container>
@@ -56,6 +51,7 @@
 			return {
 				isCollapse: false,
 				OnOffWidth: 200,
+				levelList: [],
 				list: "",
 				listIcon: {
 					'101': "el-icon-s-shop",
@@ -83,13 +79,34 @@
 			async getList() {
 				await this.$http.get('menus').then(res => {
 					this.list = res.data.data
-					console.log(this.list)
 				})
+			},
+			getBreadcrumb() {
+				let matched = this.$route.matched.filter(item => item.name)
+				const first = matched[0];
+				if (first && first.name.trim().toLocaleLowerCase() !== '首页'.toLocaleLowerCase()) {
+					matched = [{
+						path: '/welcome',
+						meta: {
+							title: '首页'
+						}
+					}].concat(matched)
+				}
+				this.levelList = matched
 			}
 
 		},
+		watch: {
+			$route() {
+				this.getBreadcrumb()
+			}
+		},
 		created() {
 			this.getList();
+			this.getBreadcrumb()
+		},
+		mounted() {
+
 		}
 	}
 </script>
@@ -114,11 +131,12 @@
 		display: flex;
 
 		img {
-			width: 60px;
-			height: 60px;
-			background: #FFFFFF;
-			border-radius: 50%;
-			margin-right: 15px;
+			    width: 50px;
+			    height: 50px;
+			    background: #FFFFFF;
+			    border-radius: 50%;
+			    margin-right: 15px;
+			    margin-top: 5px;
 		}
 
 		h2 {
@@ -134,7 +152,8 @@
 
 	.el-main {
 		background-color: #e9edf1;
-		.el-breadcrumb{
+
+		.el-breadcrumb {
 			margin-bottom: 10px;
 		}
 	}
@@ -146,13 +165,14 @@
 			position: relative;
 			width: 100%;
 			height: 28px;
-			background: #FFFFFF;
+			background: #409eff;
 
 			span {
-				position: absolute;
-				right: 0;
+				text-align: center;
 				display: block;
-				padding: 6px;
+				padding: 5px;
+				font-size: 20px;
+				color: #FFFFFF;
 			}
 		}
 
@@ -160,9 +180,5 @@
 			background: none;
 			border: none;
 		}
-	}
-
-	.el-footer {
-		background-color: #008888;
 	}
 </style>

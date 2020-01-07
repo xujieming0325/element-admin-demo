@@ -86,7 +86,7 @@
 						// this.$message.error('登录失败！请检查您的输入是否有误！');
 						return;
 					}
-					await this.$http.post('/login', this.form).then(res => {
+					await this.$http.post('login', this.form).then(res => {
 						var data = res.data
 						if (data.meta.status != 200) {
 							this.$message.error(`登录失败！${data.meta.msg}`);
