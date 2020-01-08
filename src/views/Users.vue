@@ -82,6 +82,23 @@
 				<el-button type="primary" @click="xgUsersFun">确 定</el-button>
 			</span>
 		</el-dialog>
+		<!-- 分配角色的对话框 -->
+		<el-dialog title="分配角色" :visible.sync="dialogVisible3" width="50%" >
+			<div>
+				<p>当前的用户：</p>
+				<p>当前的角色：</p>
+				<p>分配新角色：
+					<el-select  placeholder="请选择">
+						<el-option >
+						</el-option>
+					</el-select>
+				</p>
+			</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible3 = false">取 消</el-button>
+				<el-button type="primary" >确 定</el-button>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -99,6 +116,7 @@
 				count: true,
 				dialogVisible: false,
 				dialogVisible2: false,
+				dialogVisible3:false,
 				addUsers: {
 					username: "",
 					password: "",
@@ -300,7 +318,8 @@
 
 			},
 			// 分配用户角色
-			fpUsersFun(scope){
+			fpUsersFun(scope) {
+				this.dialogVisible3=true;
 				console.log(scope);
 			}
 
