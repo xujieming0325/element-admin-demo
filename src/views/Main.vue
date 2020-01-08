@@ -165,7 +165,6 @@
 			position: relative;
 			width: 100%;
 			height: 28px;
-			background: #409eff;
 
 			span {
 				text-align: center;

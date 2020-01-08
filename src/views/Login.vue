@@ -46,7 +46,7 @@
 						{
 							min: 1,
 							max: 12,
-							message: '长度在 3 到 5 个字符',
+							message: '长度在 1 到 12 个字符',
 							trigger: 'blur'
 						}
 					],
@@ -58,7 +58,7 @@
 						{
 							min: 6,
 							max: 12,
-							message: '长度在 3 到 5 个字符',
+							message: '长度在 6 到 12 个字符',
 							trigger: 'blur'
 						}
 					],
@@ -83,7 +83,6 @@
 			postLogin() {
 				this.$refs.form.validate(async (res) => {
 					if (!res) {
-						// this.$message.error('登录失败！请检查您的输入是否有误！');
 						return;
 					}
 					await this.$http.post('login', this.form).then(res => {
@@ -96,7 +95,7 @@
 							this.data = data.data;
 							// this.$Cookies.set("token",this.data.token);
 							setToken(this.data.token)
-							console.log(this.$router.push("/mian"))
+							this.$router.push("/mian")
 						}
 					})
 
