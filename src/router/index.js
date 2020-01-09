@@ -3,8 +3,14 @@ import VueRouter from 'vue-router'
 import Login from '../views/Login.vue'
 import Mian from '../views/Main.vue'
 import Welcome from '../views/Welcome.vue'
-import Users from '../views/Users.vue'
-import Roles from '../views/Roles.vue'
+import Users from '../views/users/Users.vue'
+import Roles from '../views/roles/Roles.vue'
+import Rights from '../views/roles/Rights.vue'
+import Categories from '../views/commodity/categories.vue'
+import Goods from '../views/commodity/goods.vue'
+import Params from '../views/commodity/params.vue'
+import Orders from '../views/order/orders.vue'
+import Reports from '../views/reports/reports.vue'
 import {
 	getToken
 } from '@/utils/auth'
@@ -43,6 +49,56 @@ const routes = [{
 					title: '角色列表'
 				},
 			},
+			{
+				path: '/rights',
+				component: Rights,
+				name: '权限列表',
+				meta: {
+					title: '权限列表'
+				},
+			},
+
+			{
+				path: '/goods',
+				component: Goods,
+				name: '商品列表',
+				meta: {
+					title: '商品列表'
+				},
+			},
+			{
+				path: '/params',
+				component: Params,
+				name: '分类参数',
+				meta: {
+					title: '分类参数'
+				},
+			},
+			{
+				path: '/categories',
+				component: Categories,
+				name: '商品分类',
+				meta: {
+					title: '商品分类'
+				},
+			},
+
+			{
+				path: '/orders',
+				component: Orders,
+				name: '订单列表',
+				meta: {
+					title: '订单列表'
+				},
+			},
+			{
+				path: '/reports',
+				component: Reports,
+				name: '数据报表',
+				meta: {
+					title: '数据报表'
+				},
+			}
 
 		]
 	}

@@ -83,20 +83,20 @@
 			</span>
 		</el-dialog>
 		<!-- 分配角色的对话框 -->
-		<el-dialog title="分配角色" :visible.sync="dialogVisible3" width="50%" >
+		<el-dialog title="分配角色" :visible.sync="dialogVisible3" width="50%">
 			<div>
 				<p>当前的用户：</p>
 				<p>当前的角色：</p>
 				<p>分配新角色：
-					<el-select  placeholder="请选择">
-						<el-option >
+					<el-select placeholder="请选择">
+						<el-option>
 						</el-option>
 					</el-select>
 				</p>
 			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible3 = false">取 消</el-button>
-				<el-button type="primary" >确 定</el-button>
+				<el-button type="primary">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -116,7 +116,7 @@
 				count: true,
 				dialogVisible: false,
 				dialogVisible2: false,
-				dialogVisible3:false,
+				dialogVisible3: false,
 				addUsers: {
 					username: "",
 					password: "",
@@ -209,15 +209,9 @@
 					data
 				} = await this.$http.put(`users/${id}/state/${type}`)
 				if (data.meta.status == 200) {
-					this.$message({
-						message: data.meta.msg,
-						type: 'success'
-					});
+					this.$message.success(`${data.meta.msg}`);
 				} else {
-					this.$message({
-						message: data.meta.msg,
-						type: 'warning'
-					});
+					this.$message.error(`${data.meta.msg}`);
 				}
 
 			},
@@ -319,7 +313,7 @@
 			},
 			// 分配用户角色
 			fpUsersFun(scope) {
-				this.dialogVisible3=true;
+				this.dialogVisible3 = true;
 				console.log(scope);
 			}
 
