@@ -109,7 +109,7 @@
 				queryUsers: {
 					query: "",
 					pagenum: 1,
-					pagesize: 5
+					pagesize: 10
 				},
 				UsersData: "",
 				SearchVal: "",
@@ -181,7 +181,7 @@
 			}) {
 				if (rowIndex === 1) {
 					return 'warning-row';
-				} else if (rowIndex === 3) {
+				} else if (rowIndex%2==1) {
 					return 'success-row';
 				}
 				return '';
@@ -319,7 +319,7 @@
 
 		},
 		watch: {
-			// 判断添加用户窗口是否关闭
+			// 判断添加用户窗口是否关闭而清空
 			dialogVisible(a, b) {
 				if (a == false) {
 					this.$refs.addUsers.resetFields();
@@ -340,13 +340,6 @@
 </script>
 
 <style>
-	.el-table .warning-row {
-		background: oldlace;
-	}
-
-	.el-table .success-row {
-		background: #f0f9eb;
-	}
 
 	.el-pagination {
 		margin-top: 15px;
