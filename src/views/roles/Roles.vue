@@ -9,7 +9,7 @@
 						<el-col :span="5">
 							<el-row class="el-row2">
 								<el-col :span="24">
-									<el-tag >{{item1.authName}}</el-tag>
+									<el-tag closable @close="delRoles(props.row,item1.id)">{{item1.authName}}</el-tag>
 									<i class="el-icon-caret-right"></i>
 								</el-col>
 							</el-row>
@@ -19,7 +19,7 @@
 								<el-col :span="5">
 									<el-row>
 										<el-col :span="24">
-											<el-tag type="success" >{{item2.authName}}</el-tag>
+											<el-tag type="success" closable @close="delRoles(props.row,item2.id)">{{item2.authName}}</el-tag>
 											<i class="el-icon-caret-right"></i>
 										</el-col>
 									</el-row>
@@ -46,12 +46,12 @@
 				<template slot-scope="scope">
 					<el-button type="primary" icon="el-icon-edit" size="mini" @click="hqXgRolesFun(scope.row.id)"></el-button>
 					<el-button type="primary" icon="el-icon-delete" size="mini" @click="delRolesFun(scope.row.id)"></el-button>
-					<el-button type="primary" icon="el-icon-s-tools" size="mini" @click="fpRolesFun(scope)"></el-button>
+					<el-button type="primary" icon="el-icon-s-tools" size="mini" @click="dkRolesFun(scope.row)"></el-button>
 				</template>
 			</el-table-column>
 		</el-table>
-		<!-- 添加用户 -->
-		<el-dialog title="添加用户" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+		<!-- 添加角色 -->
+		<el-dialog title="添加角色" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
 			<el-form label-width="100px" :rules="rules" ref="addRoles" :model="addRoles" class="demo-dynamic">
 				<el-form-item label="角色名称" prop="roleName">
 					<el-input v-model="addRoles.roleName"></el-input>
@@ -65,19 +65,29 @@
 				<el-button type="primary" @click="addRolesFun">确 定</el-button>
 			</span>
 		</el-dialog>
-		<!-- 修改用户信息 -->
-		<el-dialog title="修改用户信息" :visible.sync="dialogVisible2" width="30%" :before-close="handleClose">
+		<!-- 修改角色信息 -->
+		<el-dialog title="修改角色信息" :visible.sync="dialogVisible2" width="30%" :before-close="handleClose">
 			<el-form label-width="100px" :rules="rules" ref="xgRoles" :model="xgRoles" class="demo-dynamic">
-				<el-form-item label="用户名" prop="roleName">
+				<el-form-item label="角色名称" prop="roleName">
 					<el-input v-model="xgRoles.roleName"></el-input>
 				</el-form-item>
-				<el-form-item label="邮箱" prop="roleDesc">
+				<el-form-item label="角色描述" prop="roleDesc">
 					<el-input v-model="xgRoles.roleDesc"></el-input>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible2 = false">取 消</el-button>
 				<el-button type="primary" @click="EditorRolesFun">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!-- 修改角色权限 -->
+		<el-dialog title="修改角色权限" :visible.sync="dialogVisible3" width="40%" :before-close="handleClose">
+			<el-tree ref="treeRef" :props="RolesProps" :data="RolesloadNode" node-key="id" default-expand-all
+			 :default-checked-keys="defKeys" show-checkbox>
+			</el-tree>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible3 = false">取 消</el-button>
+				<el-button type="primary" @click="SetRolesFun">确 定</el-button>
 			</span>
 		</el-dialog>
 	</el-card>
@@ -91,12 +101,13 @@
 				rolesList: [],
 				dialogVisible: false,
 				dialogVisible2: false,
+				dialogVisible3: false,
 				addRoles: {
 					roleName: "",
 					roleDesc: ""
 				},
-				xgRoles:{
-					roleId:"",
+				xgRoles: {
+					roleId: "",
 					roleName: "",
 					roleDesc: ""
 				},
@@ -113,9 +124,15 @@
 							trigger: 'blur'
 						}
 					],
-					roleDesc:[]
-					
+					roleDesc: []
 				},
+				RolesProps: {
+					label: 'authName',
+					children: 'children'
+				},
+				RolesloadNode: [],
+				defKeys: [],
+				row: ""
 			}
 		},
 		methods: {
@@ -133,6 +150,7 @@
 			indexMethod(index) {
 				return index + 1;
 			},
+			// 获取角色列表
 			async rolesFun() {
 				await this.$http.get('roles').then(res => {
 					this.rolesList = res.data.data
@@ -143,6 +161,7 @@
 					}
 				})
 			},
+			// 添加角色
 			addRolesFun() {
 				this.$refs.addRoles.validate(async (res) => {
 					if (!res) {
@@ -158,20 +177,20 @@
 							this.rolesFun();
 							this.dialogVisible = false
 						}
-				
+
 					})
-				
+
 				});
 			},
-			// 获取需要修改的用户信息
+			// 获取需要修改的角色信息
 			async hqXgRolesFun(id) {
 				const {
 					data: res
 				} = await this.$http.get(`roles/${id}`)
 				this.xgRoles = res.data
-				console.log(this.xgRoles)
 				this.dialogVisible2 = true
 			},
+			// 修改角色信息
 			EditorRolesFun() {
 				this.$refs.xgRoles.validate(async (res) => {
 					if (!res) {
@@ -192,10 +211,9 @@
 							this.dialogVisible2 = false;
 						}
 					})
-				
-				
 				})
 			},
+			// 删除角色
 			delRolesFun(id) {
 				this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
 					confirmButtonText: '确定',
@@ -216,7 +234,8 @@
 					this.$message.info('已取消删除')
 				});
 			},
-			delRoles(row,rightId){
+			// 删除指定权限
+			delRoles(row, rightId) {
 				this.$confirm('此操作将永久删除该权限, 是否继续?', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
@@ -230,22 +249,74 @@
 						return;
 					} else {
 						this.$message.success(`${res.meta.msg}`);
-						row.children=res.data;
+						row.children = res.data;
 					}
 				}).catch(() => {
 					this.$message.info('已取消删除')
 				});
 			},
-			fpRolesFun() {
-				console.log(123)
+			// 使用递归获取权限id
+			getDefKeys(node, arr) {
+				if (!node.children) {
+					return arr.push(node.id)
+				}
+				node.children.forEach(item => {
+					this.getDefKeys(item, arr)
+				})
+			},
+			// 打开设置权限框
+			async dkRolesFun(row) {
+				this.row = row
+				this.dialogVisible3 = true
+				this.defKeys = []
+				this.getDefKeys(row, this.defKeys);
+				await this.$http.get('rights/tree').then(res => {
+					this.RolesloadNode = res.data.data
+					if (res.data.meta.status == 200) {
+						this.$message.success(`${res.data.meta.msg}`);
+					} else {
+						this.$message.error(`${res.data.meta.msg}`);
+					}
+				})
+			},
+			// 分配角色权限
+			SetRolesFun() {
+				const keys = [
+					...this.$refs.treeRef.getCheckedKeys(),
+					...this.$refs.treeRef.getHalfCheckedKeys(),
+				]
+				const idStr = keys.join(',')
+				this.$confirm('此操作将保存该权限设置, 是否继续?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning',
+				}).then(async () => {
+					const {
+						data: res
+					} = await this.$http.post(`roles/${this.row.id}/rights`, {
+						rids: idStr
+					})
+					if (res.meta.status != 200) {
+						this.$message.error(`${res.meta.msg}`);
+						return;
+					} else {
+						this.$message.success(`${res.meta.msg}`);
+						this.dialogVisible3 = false
+						this.rolesFun();
+					}
+				}).catch(() => {
+					this.$message.info('已取消删除')
+				});
+
+
 			},
 			// 触发右上角关闭窗口
 			handleClose() {
-				this.dialogVisible = this.dialogVisible2 = false
+				this.dialogVisible = this.dialogVisible2 = this.dialogVisible3 = false
 			},
 		},
 		watch: {
-			// 判断添加用户窗口是否关闭而清空
+			// 判断添加角色窗口是否关闭而清空
 			dialogVisible(a, b) {
 				if (a == false) {
 					this.$refs.addRoles.resetFields();
