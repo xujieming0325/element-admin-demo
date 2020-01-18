@@ -33,8 +33,8 @@
 				<el-table-column label="操作" width="180">
 					<template slot-scope="scope">
 						<el-button type="primary" icon="el-icon-edit" size="mini" @click="hqXgUsersFun(scope.row.id)"></el-button>
-						<el-button type="primary" icon="el-icon-delete" size="mini" @click="delUsersFun(scope.row.id)"></el-button>
-						<el-button type="primary" icon="el-icon-s-tools" size="mini" @click="fpUsersFun(scope)"></el-button>
+						<el-button type="danger" icon="el-icon-delete" size="mini" @click="delUsersFun(scope.row.id)"></el-button>
+						<el-button type="warning" icon="el-icon-s-tools" size="mini" @click="hqUsersFun(scope)"></el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -83,20 +83,22 @@
 			</span>
 		</el-dialog>
 		<!-- 分配角色的对话框 -->
-		<el-dialog title="分配角色" :visible.sync="dialogVisible3" width="50%">
+		<el-dialog title="分配角色" :visible.sync="dialogVisible3" width="30%">
 			<div>
-				<p>当前的用户：</p>
-				<p>当前的角色：</p>
+				<p>当前的用户：{{fpUsers.username}}</p>
+				<p>当前的角色：{{fpUsers.role_name}}</p>
 				<p>分配新角色：
-					<el-select placeholder="请选择">
-						<el-option>
+					<el-select placeholder="请选择" v-model="value">
+						<el-option v-for="item in fpUsers.roles" :key="item.id"
+      :label="item.roleName"
+      :value="item.id">
 						</el-option>
 					</el-select>
 				</p>
 			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible3 = false">取 消</el-button>
-				<el-button type="primary">确 定</el-button>
+				<el-button type="primary" @click="fpUsersFun">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -124,6 +126,13 @@
 					mobile: ""
 				},
 				xgUsers: "",
+				fpUsers:{
+					username:"",
+					role_name:"",
+					id:"",
+					roles:"",
+				},
+				value:"",
 				rules: {
 					username: [{
 							required: true,
@@ -311,10 +320,28 @@
 				});
 
 			},
-			// 分配用户角色
-			fpUsersFun(scope) {
+			//获取分配角色信息
+			async hqUsersFun(scope) {
 				this.dialogVisible3 = true;
-				console.log(scope);
+				this.fpUsers.role_name=scope.row.role_name
+				this.fpUsers.username=scope.row.username
+				this.fpUsers.id=scope.row.id
+				 const {data:res} = await this.$http.get('roles')
+				 this.fpUsers.roles=res.data
+			},
+			// 分配用户角色
+			async fpUsersFun() {
+				this.dialogVisible3 = false;
+				const {data:res} = await this.$http.put(`users/${this.fpUsers.id}/role`,{
+					rid:this.value
+				})
+				if (res.meta.status != 200) {
+					this.$message.error(`${res.meta.msg}`);
+					return;
+				} else {
+					this.$message.success(`${res.meta.msg}`);
+					this.getUsers();
+				}
 			}
 
 		},

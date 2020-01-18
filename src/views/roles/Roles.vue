@@ -5,7 +5,7 @@
 		<el-table :data="rolesList" style="width: 100%" :row-class-name="tableRowClassName">
 			<el-table-column type="expand">
 				<template slot-scope="props">
-					<el-row v-for="(item1,index1) in props.row.children" class="el-row1">
+					<el-row v-for="(item1,index1) in props.row.children" class="el-row1" :key="item1.id">
 						<el-col :span="5">
 							<el-row class="el-row2">
 								<el-col :span="24">
@@ -15,7 +15,7 @@
 							</el-row>
 						</el-col>
 						<el-col :span="20">
-							<el-row v-for="(item2,index2) in item1.children" class="el-row2">
+							<el-row v-for="(item2,index2) in item1.children" :key="item2.id" class="el-row2">
 								<el-col :span="5">
 									<el-row>
 										<el-col :span="24">
@@ -26,7 +26,7 @@
 								</el-col>
 								<el-col :span="19" class="last-el-row">
 									<el-row>
-										<el-col :span="24" style="width: 120px;" v-for="(item3,index3) in item2.children">
+										<el-col :span="24" style="width: 120px;" v-for="(item3,index3) in item2.children" :key="item3.id">
 											<el-tag type="warning" closable @close="delRoles(props.row,item3.id)">{{item3.authName}}</el-tag>
 										</el-col>
 									</el-row>
@@ -45,8 +45,8 @@
 			<el-table-column label="操作" width="">
 				<template slot-scope="scope">
 					<el-button type="primary" icon="el-icon-edit" size="mini" @click="hqXgRolesFun(scope.row.id)"></el-button>
-					<el-button type="primary" icon="el-icon-delete" size="mini" @click="delRolesFun(scope.row.id)"></el-button>
-					<el-button type="primary" icon="el-icon-s-tools" size="mini" @click="dkRolesFun(scope.row)"></el-button>
+					<el-button type="danger" icon="el-icon-delete" size="mini" @click="delRolesFun(scope.row.id)"></el-button>
+					<el-button type="warning" icon="el-icon-s-tools" size="mini" @click="dkRolesFun(scope.row)"></el-button>
 				</template>
 			</el-table-column>
 		</el-table>
