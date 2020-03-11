@@ -5,7 +5,9 @@ import './plugins/element.js'
 import {getToken}from './utils/auth.js'
 // 全局样式
 import './assets/css/global.css'
+import ZkTable from 'vue-table-with-tree-grid'
 
+Vue.component('tree-table',ZkTable)
 import axios from 'axios'
 //请求路径的根路径
 axios.defaults.baseURL='http://127.0.0.1:8888/api/private/v1/'
